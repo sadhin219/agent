@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ইনকাম অ্যাপ - bKash উইথড্র</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="icon.png">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4 max-w-md">
+        <h1 class="text-2xl font-bold text-center text-blue-600 mb-4">ইনকাম অ্যাপ - bKash উইথড্র</h1>
+
+        <!-- লগইন/রেজিস্ট্রেশন ফর্ম -->
+        <div id="authSection" class="bg-white p-4 rounded-lg shadow-md mb-6">
+            <h2 id="authTitle" class="text-lg font-semibold text-center mb-4">লগইন করুন</h2>
+            <div class="mb-4">
+                <label class="block text-gray-700">ইমেল</label>
+                <input id="email" type="email" class="w-full p-2 border rounded" placeholder="আপনার ইমেল দিন">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">পাসওয়ার্ড</label>
+                <input id="password" type="password" class="w-full p-2 border rounded" placeholder="পাসওয়ার্ড দিন">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">রেফারেল কোড (ঐচ্ছিক)</label>
+                <input id="referralCode" type="text" class="w-full p-2 border rounded" placeholder="রেফারেল কোড দিন">
+            </div>
+            <button id="authBtn" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">লগইন</button>
+            <p id="toggleAuth" class="text-center text-blue-500 cursor-pointer mt-2">নতুন অ্যাকাউন্ট তৈরি করুন</p>
+            <p id="authError" class="text-center text-red-500 mt-2 hidden"></p>
+        </div>
+
+        <!-- মূল অ্যাপ সেকশন -->
+        <div id="appSection" class="hidden">
+            <p class="text-center text-gray-700 mb-6">Adsterra লিংকে ক্লিক করে পয়েন্ট অর্জন করুন!</p>
+            <div class="bg-white p-4 rounded-lg shadow-md mb-6 text-center">
+                <p class="text-lg font-semibold">মোট পয়েন্ট: <span id="points">0</span></p>
+                <p class="text-md text-gray-600">মোট টাকা: <span id="bdt">0</span> BDT</p>
+                <p class="text-sm text-gray-500 mt-2">২০ ক্লিক = ২০০ পয়েন্ট, ১০০ পয়েন্ট = ১০ টাকা</p>
+            </div>
+            <div class="text-center mb-4">
+                <button id="clickBtn" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition">
+                    লিংকে ক্লিক করুন
+                </button>
+                <p class="text-sm text-gray-500 mt-2">দৈনিক সর্বোচ্চ ২০ ক্লিক</p>
+            </div>
+            <!-- bKash উইথড্র ফর্ম -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+                <h2 class="text-lg font-semibold text-center mb-4">bKash উইথড্র</h2>
+                <div class="mb-4">
+                    <label class="block text-gray-700">bKash নম্বর</label>
+                    <input id="bkashNumber" type="text" class="w-full p-2 border rounded" placeholder="আপনার bKash নম্বর দিন">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">উইথড্র পরিমাণ (টাকা)</label>
+                    <input id="withdrawAmount" type="number" class="w-full p-2 border rounded" placeholder="ন্যূনতম ১০০ টাকা">
+                </div>
+                <button id="withdrawBtn" class="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">উইথড্র রিকোয়েস্ট</button>
+                <p id="withdrawError" class="text-center text-red-500 mt-2 hidden"></p>
+            </div>
+            <!-- রেফারেল সেকশন -->
+            <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+                <h2 class="text-lg font-semibold text-center mb-4">আপনার রেফারেল কোড</h2>
+                <p class="text-center text-gray-700">কোড: <span id="referralCodeDisplay">না পাওয়া গেছে</span></p>
+                <p class="text-sm text-gray-500 text-center mt-2">এই কোড শেয়ার করে বন্ধুদের ইনভাইট করুন এবং বোনাস পান!</p>
+            </div>
+            <!-- এজেন্ট ড্যাশবোর্ড -->
+            <div id="agentDashboard" class="bg-white p-4 rounded-lg shadow-md mb-6 hidden">
+                <h2 class="text-lg font-semibold text-center mb-4">এজেন্ট ড্যাশবোর্ড</h2>
+                <p class="text-center text-gray-700">রেফার করা ব্যবহারকারী: <span id="referredCount">0</span></p>
+                <div id="referredUsers" class="mt-4"></div>
+            </div>
+            <button id="logoutBtn" class="w-full bg-red-500 text-white p-2 rounded mt-4 hover:bg-red-600">লগআউট</button>
+            <p id="notification" class="text-center text-red-500 mt-4 hidden"></p>
+        </div>
+    </div>
+
+    <script>
+        const adsterraLink = "https://www.profitableratecpm.com/ch7mt84r0n?key=216d55fa63644fb205e5abf96d31bbf4";
+
+        const authSection = document.getElementById("authSection");
+        const appSection = document.getElementById("appSection");
+        const authBtn = document.getElementById("authBtn");
+        const authTitle = document.getElementById("authTitle");
+        const toggleAuth = document.getElementById("toggleAuth");
+        const authError = document.getElementById("authError");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const referralCodeInput = document.getElementById("referralCode");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const clickBtn = document.getElementById("clickBtn");
+        const referralCodeDisplay = document.getElementById("referralCodeDisplay");
+        const agentDashboard = document.getElementById("agentDashboard");
+        const referredCount = document.getElementById("referredCount");
+        const referredUsers = document.getElementById("referredUsers");
+        const bkashNumber = document.getElementById("bkashNumber");
+        const withdrawAmount = document.getElementById("withdrawAmount");
+        const withdrawBtn = document.getElementById("withdrawBtn");
+        const withdrawError = document.getElementById("withdrawError");
+        let isLoginMode = true;
+
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem("users")) || {};
+        let points = 0;
+        let clickCount = 0;
+        let lastReset = new Date().toDateString();
+        let withdrawRequests = JSON.parse(localStorage.getItem("withdrawRequests")) || [];
+
+        function generateReferralCode(email) {
+            return btoa(email).slice(0, 8);
+        }
+
+        function loadUserData() {
+            if (!currentUser) return;
+            const user = users[currentUser];
+            points = user.points || 0;
+            clickCount = user.clickCount || 0;
+            lastReset = user.lastReset || new Date().toDateString();
+
+            const today = new Date().toDateString();
+            if (lastReset !== today) {
+                clickCount = 0;
+                user.clickCount = 0;
+                user.lastReset = today;
+                localStorage.setItem("users", JSON.stringify(users));
+            }
+
+            referralCodeDisplay.textContent = user.referralCode || generateReferralCode(currentUser);
+            users[currentUser].referralCode = referralCodeDisplay.textContent;
+            localStorage.setItem("users", JSON.stringify(users));
+
+            const referred = Object.values(users).filter(u => u.referredBy === referralCodeDisplay.textContent);
+            if (referred.length > 0) {
+                agentDashboard.classList.remove("hidden");
+                referredCount.textContent = referred.length;
+                referredUsers.innerHTML = referred.map(u => `<p>${u.email}: ${u.points} পয়েন্ট</p>`).join("");
+            } else {
+                agentDashboard.classList.add("hidden");
+            }
+
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById("points").textContent = points;
+            document.getElementById("bdt").textContent = (points / 10).toFixed(2);
+        }
+
+        toggleAuth.addEventListener("click", () => {
+            isLoginMode = !isLoginMode;
+            authTitle.textContent = isLoginMode ? "লগইন করুন" : "রেজিস্টার করুন";
+            toggleAuth.textContent = isLoginMode ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "লগইন করুন";
+            authBtn.textContent = isLoginMode ? "লগইন" : "রেজিস্টার";
+            authError.classList.add("hidden");
+        });
+
+        authBtn.addEventListener("click", () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            const referralCode = referralCodeInput.value.trim();
+
+            if (!email || !password) {
+                authError.textContent = "ইমেল ও পাসওয়ার্ড দিন!";
+                authError.classList.remove("hidden");
+                return;
+            }
+
+            if (isLoginMode) {
+                if (users[email] && users[email].password === password) {
+                    currentUser = email;
+                    authSection.classList.add("hidden");
+                    appSection.classList.remove("hidden");
+                    loadUserData();
+                } else {
+                    authError.textContent = "ভুল ইমেল বা পাসওয়ার্ড!";
+                    authError.classList.remove("hidden");
+                }
+            } else {
+                if (users[email]) {
+                    authError.textContent = "এই ইমেল ইতিমধ্যে নিবন্ধিত!";
+                    authError.classList.remove("hidden");
+                } else {
+                    users[email] = {
+                        password: password,
+                        points: 0,
+                        clickCount: 0,
+                        lastReset: new Date().toDateString(),
+                        referralCode: generateReferralCode(email),
+                        referredBy: referralCode || null
+                    };
+                    if (referralCode && Object.values(users).some(u => u.referralCode === referralCode)) {
+                        users[email].points += 50;
+                        const referrer = Object.keys(users).find(k => users[k].referralCode === referralCode);
+                        if (referrer) {
+                            users[referrer].points += 100;
+                        }
+                    }
+                    localStorage.setItem("users", JSON.stringify(users));
+                    authError.textContent = "রেজিস্ট্রেশন সফল! লগইন করুন।";
+                    authError.classList.remove("hidden");
+                    toggleAuth.click();
+                }
+            }
+        });
+
+        logoutBtn.addEventListener("click", () => {
+            currentUser = null;
+            authSection.classList.remove("hidden");
+            appSection.classList.add("hidden");
+            emailInput.value = "";
+            passwordInput.value = "";
+            referralCodeInput.value = "";
+            authError.classList.add("hidden");
+        });
+
+        clickBtn.addEventListener("click", () => {
+            if (!currentUser) return;
+
+            const notification = document.getElementById("notification");
+
+            if (clickCount >= 20) {
+                notification.textContent = "আজকের ক্লিক লিমিট শেষ! কাল আবার চেষ্টা করুন।";
+                notification.classList.remove("hidden");
+                return;
+            }
+
+            clickCount++;
+            if (clickCount === 20) {
+                points += 200;
+                notification.textContent = "অভিনন্দন! আপনি ২০০ পয়েন্ট অর্জন করেছেন!";
+                notification.classList.remove("hidden");
+            }
+
+            users[currentUser].points = points;
+            users[currentUser].clickCount = clickCount;
+            localStorage.setItem("users", JSON.stringify(users));
+
+            updateUI();
+            window.open(adsterraLink, "_blank");
+        });
+
+        withdrawBtn.addEventListener("click", () => {
+            const number = bkashNumber.value.trim();
+            const amount = parseFloat(withdrawAmount.value);
+            const notification = document.getElementById("notification");
+
+            if (!number || !/^\d{11}$/.test(number)) {
+                withdrawError.textContent = "সঠিক ১১ ডিজিটের bKash নম্বর দিন!";
+                withdrawError.classList.remove("hidden");
+                return;
+            }
+
+            if (amount < 100) {
+                withdrawError.textContent = "ন্যূনতম উইথড্র পরিমাণ ১০০ টাকা!";
+                withdrawError.classList.remove("hidden");
+                return;
+            }
+
+            const availableBdt = points / 10;
+            if (amount > availableBdt) {
+                withdrawError.textContent = "পর্যাপ্ত ব্যালেন্স নেই!";
+                withdrawError.classList.remove("hidden");
+                return;
+            }
+
+            const charge = amount * 0.0149; // bKash প্রিয় এজেন্ট চার্জ ১.৪৯%
+            const netAmount = amount - charge;
+
+            withdrawRequests.push({
+                email: currentUser,
+                bkashNumber: number,
+                amount: amount,
+                charge: charge,
+                netAmount: netAmount,
+                status: "Pending",
+                date: new Date().toISOString()
+            });
+
+            points -= amount * 10;
+            users[currentUser].points = points;
+            localStorage.setItem("users", JSON.stringify(users));
+            localStorage.setItem("withdrawRequests", JSON.stringify(withdrawRequests));
+
+            withdrawError.textContent = `উইথড্র রিকোয়েস্ট সফল! ${netAmount.toFixed(2)} টাকা ${number} নম্বরে পাঠানো হবে।`;
+            withdrawError.classList.remove("hidden");
+            withdrawError.classList.remove("text-red-500");
+            withdrawError.classList.add("text-green-500");
+
+            bkashNumber.value = "";
+            withdrawAmount.value = "";
+            updateUI();
+        });
+
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js")
+                .then(() => console.log("Service Worker Registered"))
+                .catch(err => console.error("Service Worker Error:", err));
+        }
+
+        if (currentUser) {
+            authSection.classList.add("hidden");
+            appSection.classList.remove("hidden");
+            loadUserData();
+        }
+    </script>
+</body>
+</html>
